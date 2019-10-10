@@ -589,6 +589,24 @@ typedef struct SBP_ATTR_PACKED {
 } msg_baseline_heading_dep_a_t;
 
 
+/** Computed Protection Level
+ *
+ * This message reports the baseline heading pointing from the base station
+ * to the rover relative to True North. The full GPS time is given by the
+ * preceding MSG_GPS_TIME with the matching time-of-week (tow).
+ */
+#define SBP_MSG_PROTECTION_LEVEL       0x0216
+typedef struct SBP_ATTR_PACKED {
+  u32 tow;      /**< GPS Time of Week [ms] */
+  u32 vpl;      /**< Vertical protection level [cm] */
+  u32 hpl;      /**< Horizontal protection level [cm] */
+  double x;        /**< ECEF X coordinate [m] */
+  double y;        /**< ECEF Y coordinate [m] */
+  double z;        /**< ECEF Z coordinate [m] */
+  u8 flags;    /**< Status flags */
+} msg_protection_level_t;
+
+
 /** \} */
 
 SBP_PACK_END

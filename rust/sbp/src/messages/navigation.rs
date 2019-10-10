@@ -1409,3 +1409,55 @@ impl super::SBPMessage for MsgVelECEFCov {
         self.sender_id = Some(new_id);
     }
 }
+
+/// Computed Protection Level
+///
+/// This message reports the baseline heading pointing from the base station
+/// to the rover relative to True North. The full GPS time is given by the
+/// preceding MSG_GPS_TIME with the matching time-of-week (tow).
+///
+#[derive(Debug)]
+#[allow(non_snake_case)]
+pub struct MsgProtectionLevel {
+    pub sender_id: Option<u16>,
+    /// GPS Time of Week
+    pub tow: u32,
+    /// Vertical protection level
+    pub vpl: u32,
+    /// Horizontal protection level
+    pub hpl: u32,
+    /// ECEF X coordinate
+    pub x: f64,
+    /// ECEF Y coordinate
+    pub y: f64,
+    /// ECEF Z coordinate
+    pub z: f64,
+    /// Status flags
+    pub flags: u8,
+}
+
+impl MsgProtectionLevel {
+    pub fn parse(_buf: &mut &[u8]) -> Result<MsgProtectionLevel, ::Error> {
+        Ok(MsgProtectionLevel {
+            sender_id: None,
+            tow: _buf.read_u32::<LittleEndian>()?,
+            vpl: _buf.read_u32::<LittleEndian>()?,
+            hpl: _buf.read_u32::<LittleEndian>()?,
+            x: _buf.read_f64::<LittleEndian>()?,
+            y: _buf.read_f64::<LittleEndian>()?,
+            z: _buf.read_f64::<LittleEndian>()?,
+            flags: _buf.read_u8()?,
+        })
+    }
+}
+impl super::SBPMessage for MsgProtectionLevel {
+    const MSG_ID: u16 = 534;
+
+    fn get_sender_id(&self) -> Option<u16> {
+        self.sender_id
+    }
+
+    fn set_sender_id(&mut self, new_id: u16) {
+        self.sender_id = Some(new_id);
+    }
+}

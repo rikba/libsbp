@@ -1265,6 +1265,53 @@ MsgBaselineHeadingDepA.prototype.fieldSpec.push(['heading', 'writeUInt32LE', 4])
 MsgBaselineHeadingDepA.prototype.fieldSpec.push(['n_sats', 'writeUInt8', 1]);
 MsgBaselineHeadingDepA.prototype.fieldSpec.push(['flags', 'writeUInt8', 1]);
 
+/**
+ * SBP class for message MSG_PROTECTION_LEVEL (0x0216).
+ *
+ * This message reports the baseline heading pointing from the base station to the
+ * rover relative to True North. The full GPS time is given by the preceding
+ * MSG_GPS_TIME with the matching time-of-week (tow).
+ *
+ * Fields in the SBP payload (`sbp.payload`):
+ * @field tow number (unsigned 32-bit int, 4 bytes) GPS Time of Week
+ * @field vpl number (unsigned 32-bit int, 4 bytes) Vertical protection level
+ * @field hpl number (unsigned 32-bit int, 4 bytes) Horizontal protection level
+ * @field x number (float, 8 bytes) ECEF X coordinate
+ * @field y number (float, 8 bytes) ECEF Y coordinate
+ * @field z number (float, 8 bytes) ECEF Z coordinate
+ * @field flags number (unsigned 8-bit int, 1 byte) Status flags
+ *
+ * @param sbp An SBP object with a payload to be decoded.
+ */
+var MsgProtectionLevel = function (sbp, fields) {
+  SBP.call(this, sbp);
+  this.messageType = "MSG_PROTECTION_LEVEL";
+  this.fields = (fields || this.parser.parse(sbp.payload));
+
+  return this;
+};
+MsgProtectionLevel.prototype = Object.create(SBP.prototype);
+MsgProtectionLevel.prototype.messageType = "MSG_PROTECTION_LEVEL";
+MsgProtectionLevel.prototype.msg_type = 0x0216;
+MsgProtectionLevel.prototype.constructor = MsgProtectionLevel;
+MsgProtectionLevel.prototype.parser = new Parser()
+  .endianess('little')
+  .uint32('tow')
+  .uint32('vpl')
+  .uint32('hpl')
+  .doublele('x')
+  .doublele('y')
+  .doublele('z')
+  .uint8('flags');
+MsgProtectionLevel.prototype.fieldSpec = [];
+MsgProtectionLevel.prototype.fieldSpec.push(['tow', 'writeUInt32LE', 4]);
+MsgProtectionLevel.prototype.fieldSpec.push(['vpl', 'writeUInt32LE', 4]);
+MsgProtectionLevel.prototype.fieldSpec.push(['hpl', 'writeUInt32LE', 4]);
+MsgProtectionLevel.prototype.fieldSpec.push(['x', 'writeDoubleLE', 8]);
+MsgProtectionLevel.prototype.fieldSpec.push(['y', 'writeDoubleLE', 8]);
+MsgProtectionLevel.prototype.fieldSpec.push(['z', 'writeDoubleLE', 8]);
+MsgProtectionLevel.prototype.fieldSpec.push(['flags', 'writeUInt8', 1]);
+
 module.exports = {
   0x0102: MsgGpsTime,
   MsgGpsTime: MsgGpsTime,
@@ -1314,4 +1361,6 @@ module.exports = {
   MsgVelNedDepA: MsgVelNedDepA,
   0x0207: MsgBaselineHeadingDepA,
   MsgBaselineHeadingDepA: MsgBaselineHeadingDepA,
+  0x0216: MsgProtectionLevel,
+  MsgProtectionLevel: MsgProtectionLevel,
 }

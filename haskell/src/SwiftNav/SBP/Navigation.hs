@@ -1354,3 +1354,52 @@ instance Binary MsgBaselineHeadingDepA where
 $(makeSBP 'msgBaselineHeadingDepA ''MsgBaselineHeadingDepA)
 $(makeJSON "_msgBaselineHeadingDepA_" ''MsgBaselineHeadingDepA)
 $(makeLenses ''MsgBaselineHeadingDepA)
+
+msgProtectionLevel :: Word16
+msgProtectionLevel = 0x0216
+
+-- | SBP class for message MSG_PROTECTION_LEVEL (0x0216).
+--
+-- This message reports the baseline heading pointing from the base station to
+-- the rover relative to True North. The full GPS time is given by the
+-- preceding MSG_GPS_TIME with the matching time-of-week (tow).
+data MsgProtectionLevel = MsgProtectionLevel
+  { _msgProtectionLevel_tow :: !Word32
+    -- ^ GPS Time of Week
+  , _msgProtectionLevel_vpl :: !Word32
+    -- ^ Vertical protection level
+  , _msgProtectionLevel_hpl :: !Word32
+    -- ^ Horizontal protection level
+  , _msgProtectionLevel_x   :: !Double
+    -- ^ ECEF X coordinate
+  , _msgProtectionLevel_y   :: !Double
+    -- ^ ECEF Y coordinate
+  , _msgProtectionLevel_z   :: !Double
+    -- ^ ECEF Z coordinate
+  , _msgProtectionLevel_flags :: !Word8
+    -- ^ Status flags
+  } deriving ( Show, Read, Eq )
+
+instance Binary MsgProtectionLevel where
+  get = do
+    _msgProtectionLevel_tow <- getWord32le
+    _msgProtectionLevel_vpl <- getWord32le
+    _msgProtectionLevel_hpl <- getWord32le
+    _msgProtectionLevel_x <- getFloat64le
+    _msgProtectionLevel_y <- getFloat64le
+    _msgProtectionLevel_z <- getFloat64le
+    _msgProtectionLevel_flags <- getWord8
+    pure MsgProtectionLevel {..}
+
+  put MsgProtectionLevel {..} = do
+    putWord32le _msgProtectionLevel_tow
+    putWord32le _msgProtectionLevel_vpl
+    putWord32le _msgProtectionLevel_hpl
+    putFloat64le _msgProtectionLevel_x
+    putFloat64le _msgProtectionLevel_y
+    putFloat64le _msgProtectionLevel_z
+    putWord8 _msgProtectionLevel_flags
+
+$(makeSBP 'msgProtectionLevel ''MsgProtectionLevel)
+$(makeJSON "_msgProtectionLevel_" ''MsgProtectionLevel)
+$(makeLenses ''MsgProtectionLevel)
