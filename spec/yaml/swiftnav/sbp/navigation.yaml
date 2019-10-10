@@ -1370,3 +1370,55 @@ definitions:
                     values:
                         - 0: Float RTK
                         - 1: Fixed RTK
+
+ - MSG_PROTECTION_LEVEL:
+    public: false
+    id: 0x0216
+    short_desc: Computed Protection Level
+    desc: |
+      This message reports the baseline heading pointing from the base station
+      to the rover relative to True North. The full GPS time is given by the
+      preceding MSG_GPS_TIME with the matching time-of-week (tow).
+    fields:
+          - tow:
+              type: u32
+              units: ms
+              desc: GPS Time of Week
+          - vpl:
+              type: u32
+              units: cm
+              desc: Vertical protection level
+          - hpl:
+              type: u32
+              units: cm
+              desc: Horizontal protection level
+          - x:
+              type: double
+              units: m
+              desc: ECEF X coordinate
+          - y:
+              type: double
+              units: m
+              desc: ECEF Y coordinate
+          - z:
+              type: double
+              units: m
+              desc: ECEF Z coordinate
+          - flags:
+              type: u8
+              desc: Status flags
+              fields:
+                - 0-2:
+                    desc: TIR Level
+                    values:
+                        - 0: TIR Level 1
+                        - 1: TIR Level 2
+                        - 2: TIR Level 3
+                - 3:
+                    desc: PL Safe State
+                    values:
+                        - 0: Disabled - Provided PL should be considered valid
+                        - 1: Enabled - Provided PL should be considered to be invalid (VPL and HPL values set to infinity)
+                - 4-7:
+                    desc: Reserved
+
