@@ -1376,9 +1376,9 @@ definitions:
     id: 0x0216
     short_desc: Computed Protection Level
     desc: |
-      This message reports the baseline heading pointing from the base station
-      to the rover relative to True North. The full GPS time is given by the
-      preceding MSG_GPS_TIME with the matching time-of-week (tow).
+      This message reports the local veritcal and horizontal protection levels
+      associated with a given ECE position solution. The full GPS time is given
+      by the preceding MSG_GPS_TIME with the matching time-of-week (tow).
     fields:
           - tow:
               type: u32
@@ -1409,7 +1409,7 @@ definitions:
               desc: Status flags
               fields:
                 - 0-2:
-                    desc: TIR Level
+                    desc: Target Integrity Risk (TIR) Level
                     values:
                         - 0: TIR Level 1
                         - 1: TIR Level 2
