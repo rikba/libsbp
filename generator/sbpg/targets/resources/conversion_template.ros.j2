@@ -13,8 +13,8 @@
 // This message is automatically generated using generator.py
 // PLEASE DO NOT MODIFY MANUALLY.
 
-#ifndef PIKSI_MULTI_MSGS_CONVERSIONS_H_
-#define PIKSI_MULTI_MSGS_CONVERSIONS_H_
+#ifndef PIKSI_MULTI_MSGS_CONVERSION_H_
+#define PIKSI_MULTI_MSGS_CONVERSION_H_
 
 // Include all SBP headers.
 ((*- for spec in all_specs *))
@@ -41,7 +41,7 @@ namespace piksi_multi_msgs {
 ((*- for definition in spec.definitions *))
 ((*- if not ((((((definition)))|ros_is_deprecated))) *))
 ((*- if not ((((((definition)))|ros_is_empty))) *))
-((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg, const uint8_t len);
+((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg);
 ((*- endif *))
 ((*- endif *))
 ((*- endfor -*))
@@ -49,4 +49,4 @@ namespace piksi_multi_msgs {
 ((*- endfor *))
 } // namespace piksi_multi_msgs
 
-#endif // PIKSI_MULTI_MSGS_CONVERSIONS_H_
+#endif // PIKSI_MULTI_MSGS_CONVERSION_H_

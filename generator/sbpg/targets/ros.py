@@ -119,6 +119,8 @@ def is_default_type(f, type_map=TYPE_MAP):
     if type_map.get(name, None):
         return True
 
+def is_default_array_type(f, type_map=TYPE_MAP):
+    return f.type_id == 'array' and type_map.get(f.options['fill'].value, None)
 
 JENV.filters['ros_to_identifier'] = to_identifier
 JENV.filters['ros_to_type'] = to_type
@@ -129,6 +131,7 @@ JENV.filters['ros_to_sbp_file_name'] = to_sbp_file_name
 JENV.filters['ros_is_deprecated'] = is_deprecated
 JENV.filters['ros_is_empty'] = is_empty
 JENV.filters['ros_is_default_type'] = is_default_type
+JENV.filters['ros_is_default_array_type'] = is_default_array_type
 JENV.filters['ros_to_sbp_msg_type_name'] = to_sbp_msg_type_name
 
 def render_source(output_dir, package_spec):
