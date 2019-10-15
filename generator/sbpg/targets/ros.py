@@ -51,21 +51,17 @@ def to_comment(value):
 def to_unit(value):
     return to_comment('[' + str(value) + ']')
 
-def remove_prefix(s):
-    prefix = "Msg"
-    if s.startswith(prefix):
-        return s[len(prefix):]
-    else:
-        return s
-
 def to_identifier(s):
   """
   Convert snake_case to camel_case.
   """
   if s.startswith('GPS'):
       s = 'Gps' + s[3:]
-  s = ''.join([i.capitalize() for i in s.split('_')]) if '_' in s else s
-  return remove_prefix(s)
+  if s.startswith('STEC'):
+      s = 'Stec' + s[4:]
+  if s.startswith('UART'):
+      s = 'Uart' + s[4:]
+  return ''.join([i.capitalize() for i in s.split('_')]) if '_' in s else s
 
 def to_type(f, type_map=TYPE_MAP):
     name = f.type_id
@@ -115,3 +111,5 @@ def render_source(output_dir, package_spec):
                 name=name,
                 message=definition
             ))
+
+    # Create conversion files.
