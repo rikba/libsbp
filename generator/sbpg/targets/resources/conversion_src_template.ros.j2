@@ -24,7 +24,13 @@ namespace piksi_multi_msgs {
 
 ((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg, const uint8_t len)
 {
-
+  ((((((definition.identifier)))|ros_to_identifier))) ros_msg;
+  ((*- for field in definition.fields -*))
+  ((*- if ((((((field)))|ros_is_default_type))) *))
+  ros_msg.(((field.identifier))) = sbp_msg.(((field.identifier)));
+  ((*- endif -*))
+  ((*- endfor *))
+  return ros_msg;
 }
 
 ((*- endif *))
