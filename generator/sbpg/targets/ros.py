@@ -114,6 +114,11 @@ def to_sbp_msg_type_name(s):
         s = 'sbp_' + s
     return s
 
+def is_default_type(f, type_map=TYPE_MAP):
+    name = f.type_id
+    if type_map.get(name, None):
+        return True
+
 
 JENV.filters['ros_to_identifier'] = to_identifier
 JENV.filters['ros_to_type'] = to_type
@@ -123,6 +128,7 @@ JENV.filters['ros_to_title'] = to_title
 JENV.filters['ros_to_sbp_file_name'] = to_sbp_file_name
 JENV.filters['ros_is_deprecated'] = is_deprecated
 JENV.filters['ros_is_empty'] = is_empty
+JENV.filters['ros_is_default_type'] = is_default_type
 JENV.filters['ros_to_sbp_msg_type_name'] = to_sbp_msg_type_name
 
 def render_source(output_dir, package_spec):
