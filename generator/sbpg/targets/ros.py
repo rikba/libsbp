@@ -70,6 +70,10 @@ def to_type(f, type_map=TYPE_MAP):
     name = f.type_id
     if name.startswith('GPS'):
         name = 'Gps' + name[3:]
+    if name.startswith('STEC'):
+        name = 'Stec' + name[4:]
+    if name.startswith('UART'):
+        name = 'Uart' + name[4:]
     if type_map.get(name, None):
         return type_map.get(name, None)
     elif name == 'array':
@@ -89,6 +93,9 @@ def is_deprecated(definition):
         return False
     return 'legacy' in definition.desc
 
+def is_empty(definition):
+    return len(definition.fields) == 0
+
 def to_sbp_file_name(identifier):
     prefix = 'swiftnav.sbp.'
     if identifier.startswith(prefix):
@@ -98,11 +105,14 @@ def to_sbp_file_name(identifier):
 
 def to_sbp_msg_type_name(s):
     if s.isupper():
-        return s.lower() + '_t'
+        s = s.lower() + '_t'
     else:
         # https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
         s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
-        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower() + '_t'
+        s = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower() + '_t'
+    if s == 'gnss_signal_t' or s == 'gps_time_t':
+        s = 'sbp_' + s
+    return s
 
 
 JENV.filters['ros_to_identifier'] = to_identifier
@@ -112,6 +122,7 @@ JENV.filters['ros_to_unit'] = to_unit
 JENV.filters['ros_to_title'] = to_title
 JENV.filters['ros_to_sbp_file_name'] = to_sbp_file_name
 JENV.filters['ros_is_deprecated'] = is_deprecated
+JENV.filters['ros_is_empty'] = is_empty
 JENV.filters['ros_to_sbp_msg_type_name'] = to_sbp_msg_type_name
 
 def render_source(output_dir, package_spec):
