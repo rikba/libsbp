@@ -160,6 +160,9 @@ def main():
       elif args.test_c:
         test_c.render_check_suites(output_dir, all_specs)
         test_c.render_check_main(output_dir, all_specs)
+      elif args.ros:
+        import sbpg.targets.ros as ros
+        ros.render_conversions(output_dir, all_specs)
 
   except KeyboardInterrupt:
     pass

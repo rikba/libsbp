@@ -17,11 +17,14 @@ files.
 """
 
 import os
+import re
 import copy
 from sbpg.targets.templating import *
 from sbpg.utils import markdown_links
 
 MESSAGES_TEMPLATE_NAME = 'message_template.ros.j2'
+CONVERSION_TEMPLATE_NAME = 'conversion_template.ros.j2'
+CONVERSION_SRC_TEMPLATE_NAME = 'conversion_src_template.ros.j2'
 
 TYPE_MAP = {
   'u8': 'uint8',
@@ -80,17 +83,36 @@ def to_title(s):
     return s.title()
 
 def is_deprecated(definition):
-    if "DEP" in definition.identifier.upper():
+    if 'DEP' in definition.identifier.upper():
         return True
     if not definition.desc:
         return False
-    return "legacy" in definition.desc
+    return 'legacy' in definition.desc
+
+def to_sbp_file_name(identifier):
+    prefix = 'swiftnav.sbp.'
+    if identifier.startswith(prefix):
+        return identifier[len(prefix):]
+    else:
+        return identifier
+
+def to_sbp_msg_type_name(s):
+    if s.isupper():
+        return s.lower() + '_t'
+    else:
+        # https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower() + '_t'
+
 
 JENV.filters['ros_to_identifier'] = to_identifier
 JENV.filters['ros_to_type'] = to_type
 JENV.filters['ros_to_comment'] = to_comment
 JENV.filters['ros_to_unit'] = to_unit
 JENV.filters['ros_to_title'] = to_title
+JENV.filters['ros_to_sbp_file_name'] = to_sbp_file_name
+JENV.filters['ros_is_deprecated'] = is_deprecated
+JENV.filters['ros_to_sbp_msg_type_name'] = to_sbp_msg_type_name
 
 def render_source(output_dir, package_spec):
     """
@@ -112,4 +134,31 @@ def render_source(output_dir, package_spec):
                 message=definition
             ))
 
+def render_conversions(output_dir, all_specs):
     # Create conversion files.
+    # Header
+    include_dir = output_dir + '/include'
+    if not os.path.exists(include_dir):
+        os.mkdir(include_dir)
+    include_dir = include_dir + '/piksi_multi_msgs'
+    if not os.path.exists(include_dir):
+        os.mkdir(include_dir)
+
+    ros_template = JENV.get_template(CONVERSION_TEMPLATE_NAME)
+    destination_filename = '%s/conversion.h' % (include_dir)
+    with open(destination_filename, 'w') as f:
+        f.write(ros_template.render(
+            all_specs=all_specs
+        ))
+
+    # Source
+    src_dir = output_dir + '/src'
+    if not os.path.exists(src_dir):
+        os.mkdir(src_dir)
+
+    ros_template = JENV.get_template(CONVERSION_SRC_TEMPLATE_NAME)
+    destination_filename = '%s/conversion.cc' % (src_dir)
+    with open(destination_filename, 'w') as f:
+        f.write(ros_template.render(
+            all_specs=all_specs
+        ))
