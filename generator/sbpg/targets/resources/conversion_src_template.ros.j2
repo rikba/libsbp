@@ -22,7 +22,7 @@ namespace piksi_multi_msgs {
 ((*- if not ((((((definition)))|ros_is_deprecated))) *))
 ((*- if not ((((((definition)))|ros_is_empty))) *))
 
-((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg)
+((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg, const uint8_t len)
 {
   ((((((definition.identifier)))|ros_to_identifier))) ros_msg;
   ((*- for field in definition.fields -*))
@@ -30,11 +30,13 @@ namespace piksi_multi_msgs {
   ((*- if ((((((field)))|ros_is_default_type))) *))
   ros_msg.(((field.identifier))) = sbp_msg.(((field.identifier)));
   ((*- elif field.type_id == 'array' *))
-  for (auto msg : sbp_msg.(((field.identifier))))
   ((*- if ((((((field)))|ros_is_default_array_type))) *))
+  for (auto msg : sbp_msg.(((field.identifier))))
     ros_msg.(((field.identifier))).push_back(msg);
   ((*- else *))
-    ros_msg.(((field.identifier))).push_back(convertSbpMsgToRosMsg(msg));
+  // Compute array size from message length and header size and array object size.
+  for (size_t i = 0; i < (len - sizeof(sbp_msg)) / sizeof( *sbp_msg.(((field.identifier)))); ++i)
+    ros_msg.(((field.identifier))).push_back(convertSbpMsgToRosMsg(sbp_msg.(((field.identifier)))[i]));
   ((*- endif -*))
   ((*- else *))
   ros_msg.(((field.identifier))) = convertSbpMsgToRosMsg(sbp_msg.(((field.identifier))));

@@ -41,7 +41,7 @@ namespace piksi_multi_msgs {
 ((*- for definition in spec.definitions *))
 ((*- if not ((((((definition)))|ros_is_deprecated))) *))
 ((*- if not ((((((definition)))|ros_is_empty))) *))
-((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg);
+((((((definition.identifier)))|ros_to_identifier))) convertSbpMsgToRosMsg(const ((((((definition.identifier)))|ros_to_sbp_msg_type_name)))& sbp_msg, const uint8_t len = 0);
 ((*- endif *))
 ((*- endif *))
 ((*- endfor -*))
