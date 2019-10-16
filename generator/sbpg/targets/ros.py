@@ -25,6 +25,7 @@ from sbpg.utils import markdown_links
 MESSAGES_TEMPLATE_NAME = 'message_template.ros.j2'
 CONVERSION_TEMPLATE_NAME = 'conversion_template.ros.j2'
 CONVERSION_SRC_TEMPLATE_NAME = 'conversion_src_template.ros.j2'
+CALLBACK_TEMPLATE_NAME = 'callback_template.ros.j2'
 
 TYPE_MAP = {
   'u8': 'uint8',
@@ -65,6 +66,9 @@ def to_identifier(s):
   if s.startswith('UART'):
       s = 'Uart' + s[4:]
   return ''.join([i.capitalize() for i in s.split('_')]) if '_' in s else s
+
+def to_msg_type(s):
+    return "SBP_" + s
 
 def to_type(f, type_map=TYPE_MAP):
     name = f.type_id
@@ -114,6 +118,19 @@ def to_sbp_msg_type_name(s):
         s = 'sbp_' + s
     return s
 
+def to_topic(s):
+    s = to_sbp_msg_type_name(s)
+    suffix = '_t'
+    if s.endswith(suffix):
+        s = s[:-len(suffix)]
+    prefix = 'sbp_'
+    if s.startswith(prefix):
+        s = s[len(prefix):]
+    prefix = 'msg_'
+    if s.startswith(prefix):
+        s = s[len(prefix):]
+    return s
+
 def is_default_type(f, type_map=TYPE_MAP):
     name = f.type_id
     if type_map.get(name, None):
@@ -133,6 +150,8 @@ JENV.filters['ros_is_empty'] = is_empty
 JENV.filters['ros_is_default_type'] = is_default_type
 JENV.filters['ros_is_default_array_type'] = is_default_array_type
 JENV.filters['ros_to_sbp_msg_type_name'] = to_sbp_msg_type_name
+JENV.filters['ros_to_topic'] = to_topic
+JENV.filters['ros_to_msg_type'] = to_msg_type
 
 def render_source(output_dir, package_spec):
     """
@@ -178,6 +197,15 @@ def render_conversions(output_dir, all_specs):
 
     ros_template = JENV.get_template(CONVERSION_SRC_TEMPLATE_NAME)
     destination_filename = '%s/conversion.cc' % (src_dir)
+    with open(destination_filename, 'w') as f:
+        f.write(ros_template.render(
+            all_specs=all_specs
+        ))
+
+    # ROS callbacks
+    export_dir = output_dir + '/../piksi_multi_cpp/include/piksi_multi_cpp/sbp_callback_handler/sbp_callback_handler_relay'
+    ros_template = JENV.get_template(CALLBACK_TEMPLATE_NAME)
+    destination_filename = '%s/sbp_callback_handler_relay_sbp.h' % (export_dir)
     with open(destination_filename, 'w') as f:
         f.write(ros_template.render(
             all_specs=all_specs
